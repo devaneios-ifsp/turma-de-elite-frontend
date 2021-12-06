@@ -14,4 +14,14 @@
   line-height: 40px;
 }
 
+.fieldWidth{
+  width: 90px;
+}
 
+
+@media (max-width: 500px)
+  {
+    .fieldWidth{
+      width: 90vh;
+    }
+  }

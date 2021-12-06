@@ -3,6 +3,9 @@ import {FormControl} from "@angular/forms";
 import {ClassService} from "../../../../manager/school-classes/services/class.service";
 import {PageEvent} from "@angular/material/paginator";
 import {RankingService} from "../../services/ranking.service";
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ranking-page',
@@ -14,7 +17,14 @@ export class RankingPageComponent implements OnInit {
   isLoading = true;
   isChangingPage = false;
 
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  .pipe(
+    map(result => result.matches),
+    shareReplay()
+  );
+
   classes:any[] = [];
+  lmsClasses: any[] = [];
 
   totalLength = 0;
   pageSize = 5;
@@ -22,12 +32,15 @@ export class RankingPageComponent implements OnInit {
   searchControl = new FormControl('');
 
   classToggleId: number | null = null;
+  classToggleExternalId: string | null = null;
 
   createMode = true;
 
   clear = false;
 
-  constructor(private rankingService: RankingService) {
+  constructor(
+    private rankingService: RankingService,
+    private breakpointObserver: BreakpointObserver) {
     this.refresh();
   }
 
@@ -40,6 +53,16 @@ export class RankingPageComponent implements OnInit {
       this.totalLength = response.totalElements;
       this.isLoading = false;
     })
+    this.rankingService.getExternalRankedClasses().subscribe( response => {
+      this.lmsClasses = response;
+      this.isLoading = false;
+    })
+  }
+
+  setToggleClass(classroom: any){
+    this.classToggleExternalId=classroom.externalId;
+    this.classToggleId=null;
+    this.createMode=false;
   }
 
   pageChange(pageEvent: PageEvent) {

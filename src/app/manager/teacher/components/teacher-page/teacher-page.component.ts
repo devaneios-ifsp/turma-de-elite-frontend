@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
 import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {PageEvent} from "@angular/material/paginator";
 import {TeacherService} from "../../services/teacher.service";
-import { of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import Teacher from 'src/app/shared/model/teacher';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-teacher-page',
@@ -15,7 +17,15 @@ export class TeacherPageComponent implements OnInit {
   isLoading = true;
   isChangingPage = false;
 
-  teachers: any[] = [];
+  localTeachers: any[] = [];
+  lmsTeachers: any[] = [];
+
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  .pipe(
+    map(result => result.matches),
+    shareReplay()
+  );
+
 
   totalLength = 0;
   pageSize = 5;
@@ -32,10 +42,14 @@ export class TeacherPageComponent implements OnInit {
   filteredTeachers$ = of([] as Teacher[]);
 
   teacherToggleId: number | null = null;
+  isFromLms: boolean = false;
 
   createMode = true;
 
-  constructor(private teacherService: TeacherService, private fb: FormBuilder) {
+  constructor(
+    private teacherService: TeacherService, 
+    private fb: FormBuilder,
+    private breakpointObserver: BreakpointObserver) {
     this.refresh();
   }
 
@@ -43,32 +57,46 @@ export class TeacherPageComponent implements OnInit {
 
     this.teacherForm.get('name')?.valueChanges.subscribe(value => {
       if(!value?.id){
-        // this.filteredSchools$ = this.schoolService.findSchoolByNameSimilarity(value);
         if (value === ""){
-          this.refresh();
+            this.refresh();
         } else {
-          this.teacherService.findTeacherByNameSimilarity(value).subscribe (teachers => {
-            this.teachers = teachers;
-          }
-        );
+          this.teacherService.findTeacherByNameSimilarity(value).subscribe (localTeachers => {
+            this.localTeachers = localTeachers;
+          });
+
         }
       }
     })
-
   }
 
   refresh(){
     this.teacherService.getTeachersUsers(this.pageSize,0).subscribe(response => {
-      this.teachers = response.content;
+      this.localTeachers = response.content;
       this.totalLength = response.totalElements;
       this.isLoading = false;
     })
   }
 
+  loadTeachers(index: number){
+    if (index == 0){
+      this.teacherService.getTeachersUsers(this.pageSize,0).subscribe(response => {
+        this.localTeachers = response.content;
+        this.totalLength = response.totalElements;
+        this.isLoading = false;
+      })
+    } else if (index == 1){
+      this.teacherService.getExternalTeachers().subscribe(response => {
+        this.lmsTeachers = response;
+        this.totalLength = response.totalElements;
+        this.isLoading = false;
+      })   
+    }
+  }
+
   pageChange(pageEvent: PageEvent) {
     this.isChangingPage = true;
     this.teacherService.getTeachersUsers(pageEvent.pageSize,pageEvent.pageIndex).subscribe(response => {
-      this.teachers = response.content;
+      this.localTeachers = response.content;
       this.pageSize = pageEvent.pageSize;
       this.totalLength = response.totalElements;
       this.isChangingPage = false;
@@ -78,6 +106,5 @@ export class TeacherPageComponent implements OnInit {
   displayTeacherName(teacher: Teacher){
     return teacher && teacher.name ? teacher.name: '';
   }
-
 
 }

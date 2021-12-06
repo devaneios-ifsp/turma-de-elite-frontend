@@ -30,7 +30,9 @@
     "minLengthStudent": "O nome do aluno deve ter no mínimo 5 caracteres.",
     "registryPattern": "A matrícula do aluno deve conter apenas letras e números.",
     "classNameIsRequired": "É necessário inserir o nome da turma",
-    "classNamePattern": "O nome da turma deve conter apenas letras e números."
+    "classNamePattern": "O nome da turma deve conter apenas letras e números.",
+    "tierPercentError": "A soma das porcentagens deve ser 100",
+    "undefinedError": "Erro indefinido"
   },
   "labels": {
     "login": "Login",
@@ -88,7 +90,7 @@
     "expired": "Expirado",
     "viewDeliveries": "Visualizar Entregas",
     "close": "Fechar",
-    "gradePercentage": "Percentual da nota",
+    "gradePercentage": "Nota (%)",
     "registerAchievement": "Criar conquista",
 
     "updateAchievement": "Editar conquista",
@@ -110,11 +112,29 @@
     "closeClass": "Encerrar turma",
     "school-classes": "Turmas",
     "classClosed": "Turma encerrada",
-    "scoreReceived": "Nota recebida"
+    "scoreReceived": "Nota recebida",
+
+    "rankingConfig": "Configuração do ranking",
+    "goldPercent": "Percentual no Tier Ouro",
+    "silverPercent": "Percentual no Tier Prata",
+    "bronzePercent": "Percentual no Tier Bronze",
+
+    "connections": "Conexões",
+    "syncInfo": "Sincronize o Turma de Elite com outras plataformas de aprendizado",
+
+    "newUsersDashboard": "Novos usuários nos últimos 12 meses",
+    "activeInactiveUsers": "Usuários ativos e inativos nos últimos 12 meses",
+
+    "postedDeliveredActivities": "Atividades postadas x entregues",
+    "studentsRanking": "Ranking de alunos",
+    
+    "activeInactiveStudents": "Alunos ativos e inativos nos últimos 12 meses",
+    "teachersEngagement": "Engajamento dos professores no sistema"
   },
   "actions": {
     "addNewAdmin": "Adicionar Administrador",
-    "close": "Fechar"
+    "close": "Fechar",
+    "syncClassroomClasses": "Synchronize Classroom Classes"
   },
   "hint":{
     "schoolIdentifier": "Insira um identificador único para esta escola"
@@ -133,7 +153,8 @@
     "updateTeacher": "Atualizar Professor",
     "yourClasses": "Suas turmas e atividades",
     "deliveriesForThisActivity": "Entregas para esta atividade",
-    "yourAchievements": "Suas conquistas"
+    "yourAchievements": "Suas conquistas",
+    "yourConnections": "Suas Conexões"
   },
   "tooltip": {
     "addNewUser": "Registrar novo usuário Admin",
@@ -163,10 +184,12 @@
     "classClosed": "Turma encerrada com sucesso!",
     "activityCreated": "Atividade criada com sucesso!",
     "activityUpdated": "Atividade atualizada com sucesso!",
+    "activityDelivered": "Atividade entregue",
     "classCreated": "Turma criada com sucesso!",
-    "classNameAndStatusUpdated": "Turma atualizada com sucesso!"
-
-
+    "classNameAndStatusUpdated": "Turma atualizada com sucesso!",
+    "tierConfigSavedSuccessfully": "Configuração de Tier salva com sucesso!",
+    "tierConfigUpdatedSuccessfully": "Configuração de Tier atualizada com sucesso!",
+    "activityDelivered": "Activity delivered successfully!"
   },
   "placeholder": {
     "searchTeacher": "Buscar Professor",

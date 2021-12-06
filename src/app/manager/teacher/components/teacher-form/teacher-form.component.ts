@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@an
 import {FormBuilder, Validators} from "@angular/forms";
 import {of} from "rxjs";
 import School from "../../../../shared/model/school";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {SchoolService} from "../../../../admin/schools/services/school.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
@@ -20,8 +20,11 @@ export class TeacherFormComponent implements OnInit {
 
   @Input() teacherId:number | null = null;
   @Input() createMode = true;
+  @Input() isFromLms: boolean = false;
 
   @Output() save = new EventEmitter();
+  @Output() cancel = new EventEmitter();
+
   alreadyRegisteredEmail = false;
 
   teacherForm = this.fb.group({
@@ -32,7 +35,7 @@ export class TeacherFormComponent implements OnInit {
 
   isLoading = false;
   filteredSchools$ = of([] as School[]);
-
+  
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -40,7 +43,6 @@ export class TeacherFormComponent implements OnInit {
     private schoolService: SchoolService,
     private snackbar: MatSnackBar,
     private translateService: TranslateService,
-    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -51,11 +53,21 @@ export class TeacherFormComponent implements OnInit {
     })
     this.route.params.subscribe(value => {
       if(value['id']){
-        this.isEdit = true;
-        this.teacherId = value['id'];
-        this.teacherService.getTeacherById(this.teacherId as number).subscribe(({email,name,isActive})=>{
-          this.teacherForm.setValue({email,name,isActive});
-        });
+        
+        if(this.isFromLms === true) {
+          this.isEdit = true;
+          this.teacherService.getTeacherByExternalId(this.teacherId as number).subscribe(({email,name,isActive}) => {
+            this.teacherForm.setValue({email, name, isActive});
+          });
+        }
+        else if (this.isFromLms === false || this.isFromLms === null) {
+          this.isEdit = true;
+          this.teacherId = value['id'];
+          this.teacherService.getTeacherById(this.teacherId as number).subscribe(({email,name,isActive})=>{
+            this.teacherForm.setValue({email,name,isActive});
+          });
+        }
+
       }
     })
   }
@@ -66,16 +78,24 @@ export class TeacherFormComponent implements OnInit {
       this.teacherForm.reset();
     }
     else{
-      this.teacherService.getTeacherById(this.teacherId as number).subscribe( ({name,email,isActive}) => {
-        this.teacherForm.setValue({name,email,isActive})
-      })
+
+      if(this.isFromLms === true) {
+        this.teacherService.getTeacherByExternalId(this.teacherId as number).subscribe( ({name,email,isActive}) => {
+          this.teacherForm.setValue({name,email,isActive})
+        })
+      }
+      else if (this.isFromLms === false || this.isFromLms === null) {
+        this.teacherService.getTeacherById(this.teacherId as number).subscribe( ({name,email,isActive}) => {
+          this.teacherForm.setValue({name,email,isActive})
+        })
+      }
     }
   }
 
   updateTeacher(){
     this.isLoading = true;
     this.teacherService.updateTeacher(this.teacherId,this.teacherForm.value).subscribe(success => {
-      this.translateService.get('messages.managerUpdated').subscribe( translation => {
+      this.translateService.get('messages.teacherUpdated').subscribe( translation => {
         this.isLoading = false;
         this.save.emit();
         this.snackbar.open(translation,'Fechar').afterDismissed();
@@ -88,7 +108,7 @@ export class TeacherFormComponent implements OnInit {
   registerTeacher(){
     this.isLoading = true;
     this.teacherService.registerTeacher(this.teacherForm.value).subscribe(success => {
-      this.translateService.get('messages.managerCreated').subscribe( translation => {
+      this.translateService.get('messages.teacherCreated').subscribe( translation => {
         this.isLoading = false;
         this.save.emit();
         this.teacherForm.reset();
@@ -113,6 +133,11 @@ export class TeacherFormComponent implements OnInit {
 
   showSnackbar(message: string){
     this.snackbar.open(message,'Fechar');
+  }
+
+  
+  closeForm(){
+    this.cancel.emit();
   }
 
 }

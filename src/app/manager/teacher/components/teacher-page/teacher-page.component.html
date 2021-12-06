@@ -1,11 +1,16 @@
 <div fxLayout="column" fxLayoutAlign="center start">
-  <div class="page-title" fxFlexAlign="start" fxLayoutAlign="center start">
-    <button mat-icon-button routerLink="/manager/dashboard"><mat-icon>navigate_before</mat-icon></button>
-    <h1 class="mat-display-1">{{'labels.teachers'|translate}}</h1>
-  </div>
   <div class="full-width" fxLayout="row" fxLayoutAlign="space-around  start">
-    <div fxFlex="45">
-      <mat-form-field class="full-width" appearance="outline">
+    <mat-sidenav-container class="sidenav-container">
+      <mat-sidenav #drawer class="sidenav" fixedInViewport 
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'" 
+      [opened]="true">
+      <div class="page-title" fxFlexAlign="start" fxLayoutAlign="start">
+        <button mat-icon-button routerLink="/manager/dashboard"><mat-icon>navigate_before</mat-icon></button>
+        <h1 class="mat-display-1">{{'labels.teachers'|translate}}</h1>
+      </div>
+      <div class="search" >
+        <mat-form-field class = "full-width" appearance="outline" >
         <form [formGroup] = "teacherForm">
           <input type="tel" matInput placeholder="{{'placeholder.searchTeacher'| translate}}" [formControl]="searchControl" [matAutocomplete]="auto" formControlName="name">
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTeacherName">
@@ -16,30 +21,60 @@
         </form>
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
-      <a
-        data-cy="create"
+      </div>
+      <mat-nav-list>
+      <mat-tab-group (selectedTabChange)="loadTeachers($event.index)">
+      <mat-tab label="Turma de Elite">
+      
+        <a *ngIf="(isHandset$ | async)" 
+        data-cy-teacher="create"
         [ngClass]="'mat-elevation-z1 '+  (createMode?'toggled-tile':'tile')"
         fxLayout="row"
         fxFlexAlign="center center"
         fxLayoutAlign="start center"
-        (click)="createMode=true;teacherToggleId=null">
+        (click)="createMode=true;teacherToggleId=null;isFromLms=false; drawer.toggle()">
         <mat-icon color="primary">add</mat-icon>
         <p color="primary">{{'labels.createTeacher'|translate}}</p>
       </a>
+      <a *ngIf="!(isHandset$ | async)" 
+      data-cy-teacher="create"
+      [ngClass]="'mat-elevation-z1 '+  (createMode?'toggled-tile':'tile')"
+      fxLayout="row"
+      fxFlexAlign="center center"
+      fxLayoutAlign="start center"
+      (click)="createMode=true;teacherToggleId=null; isFromLms=false">
+      <mat-icon color="primary">add</mat-icon>
+      <p color="primary">{{'labels.createTeacher'|translate}}</p>
+    </a>
       <div *ngIf="isLoading" fxLayout="row" fxLayoutAlign="center center">
         <mat-spinner></mat-spinner>
       </div>
+      <div *ngFor="let teacher of localTeachers">
       <a
-   
+        *ngIf="(isHandset$ | async)" 
+        [attr.data-cy-edit-teacher]="teacher.id"
         [ngClass]="'mat-elevation-z1 ' + (teacherToggleId===teacher.id?'toggled-tile':'tile')"
         fxLayout="row"
         fxFlexAlign="center center"
         fxLayoutAlign="start center"
-        *ngFor="let teacher of teachers"
-        (click)="teacherToggleId=teacher.id;createMode=false">
+        (click)="teacherToggleId=teacher.id;createMode=false;drawer.toggle(); isFromLms=false">
         <mat-icon [ngClass]="teacher.isActive?'primary':'disabled'">person</mat-icon>
         <p color="primary">{{teacher.name}}</p>
       </a>
+    </div>
+    <div *ngFor="let teacher of localTeachers">
+      <a
+        *ngIf="!(isHandset$ | async)" 
+        [attr.data-cy-edit-teacher]="teacher.id"
+        [ngClass]="'mat-elevation-z1 ' + (teacherToggleId===teacher.id?'toggled-tile':'tile')"
+        fxLayout="row"
+        fxFlexAlign="center center"
+        fxLayoutAlign="start center"
+        (click)="teacherToggleId=teacher.id;createMode=false;isFromLms=false">
+        <mat-icon [ngClass]="teacher.isActive?'primary':'disabled'">person</mat-icon>
+        <p color="primary">{{teacher.name}}</p>
+      </a>
+    </div>
       <mat-paginator
         class="full-width"
         [length]="totalLength"
@@ -47,14 +82,58 @@
         [pageSizeOptions]="[5, 10, 25, 100]"
         (page)="pageChange($event)">
       </mat-paginator>
-    </div>
-    <div fxFlex="45" fxFlexAlign="start">
+    </mat-tab>
+    <mat-tab label="Google Classroom">
+      <div *ngFor="let teacher of lmsTeachers">
+        <a
+          *ngIf="(isHandset$ | async)" 
+          [attr.data-cy-edit-teacher]="teacher.id"
+          [ngClass]="'mat-elevation-z1 ' + (teacherToggleId===teacher.externalId?'toggled-tile':'tile')"
+          fxLayout="row"
+          fxFlexAlign="center center"
+          fxLayoutAlign="start center"
+          (click)="teacherToggleId=teacher.externalId;createMode=false;drawer.toggle(); isFromLms=true">
+          <mat-icon [ngClass]="teacher.isActive?'primary':'disabled'">person</mat-icon>
+          <p color="primary">{{teacher.name}}</p>
+        </a>
+      </div>
+      <div *ngFor="let teacher of lmsTeachers">
+        <a
+          *ngIf="!(isHandset$ | async)" 
+          [attr.data-cy-edit-teacher]="teacher.id"
+          [ngClass]="'mat-elevation-z1 ' + (teacherToggleId===teacher.externalId?'toggled-tile':'tile')"
+          fxLayout="row"
+          fxFlexAlign="center center"
+          fxLayoutAlign="start center"
+          (click)="teacherToggleId=teacher.externalId;createMode=false;isFromLms=true">
+          <mat-icon [ngClass]="teacher.isActive?'primary':'disabled'">person</mat-icon>
+          <p color="primary">{{teacher.name}}</p>
+        </a>
+      </div>
+        <mat-paginator
+          class="full-width"
+          [length]="totalLength"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          (page)="pageChange($event)">
+        </mat-paginator>
+        </mat-tab>
+        </mat-tab-group>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content  class="content">
+    <div fxFlex="100" fxFlexAlign="end">
       <app-teacher-form
         *ngIf="teacherToggleId || createMode"
         [teacherId]="teacherToggleId"
+        [isFromLms]="isFromLms"
         [createMode]="createMode"
-        (save)="refresh()">
+        (save)="refresh()"
+        (cancel)="drawer.toggle($event)">
       </app-teacher-form>
     </div>
-  </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+</div>
+
 </div>

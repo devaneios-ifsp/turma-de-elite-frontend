@@ -10,6 +10,10 @@ export class ActivityService {
 
   constructor(private http: HttpClient) { }
 
+  getExternalStudentActivities() {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/authenticated-student`).pipe(take(1));  
+  }
+
   getTeacherActivitiesPaginated(pageSize: number, pageNumber: number) {
     return this.http.get<any>(`${environment.apiUrl}/api/activities?pageSize=${pageSize}&pageNumber=${pageNumber}`).pipe(take(1));
   }
@@ -24,6 +28,10 @@ export class ActivityService {
 
   getTeacherActivityById(activityId: number) {
     return this.http.get<any>(`${environment.apiUrl}/api/activities/${activityId}`).pipe(take(1));
+  }
+
+  getTeacherExternalActivityById(externalActivityId: number) {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/${externalActivityId}`).pipe(take(1));
   }
 
   getStudentActivityById(activityId: number,classId: number) {
@@ -51,5 +59,13 @@ export class ActivityService {
       `${environment.apiUrl}/api/activities/${activityId}/student/download`,
       {responseType: 'blob' as 'json',observe: 'response'}
     ).pipe(take(1));
+  }
+
+  getTeacherExternalActivities(){
+    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/authenticated-teacher`).pipe(take(1));
+  }
+
+  getPaginatedActivities(pageSize:any, pageNumber:any){
+    return this.http.get<any>(`${environment.apiUrl}/api/activities?size=${pageSize}&pageNumber=${pageNumber}`).pipe(take(1));
   }
 }

@@ -5,6 +5,7 @@
   </h1>
 
   <form
+    fxLayout.xs="column"
     fxLayout="row wrap"
     fxLayoutAlign="space-between"
     class="full-width"
@@ -12,54 +13,69 @@
     [formGroup]="studentForm"
     (ngSubmit)="isEdit ? updateStudent() : registerStudent()">
     <mat-form-field
-      fxFlex="45" appearance="outline">
+      fxFlex="100" appearance="outline">
       <mat-label>E-mail</mat-label>
       <input
+       data-cy-input="email"
         matInput
         type="text"
         formControlName="email"
         placeholder="{{'placeholder.studentEmail'| translate}}"
         pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+        readonly="{{isFromLms}}"
         required>
       <mat-error *ngIf="alreadyRegisteredEmail">{{'fieldErrors.accountNotFound'|translate}}</mat-error>
       <mat-error *ngIf="studentForm.get('email')?.errors?.required">{{'fieldErrors.emailIsRequired'|translate}}</mat-error>
       <mat-error *ngIf="studentForm.get('email')?.errors?.pattern">{{'fieldErrors.emailPattern'|translate}}</mat-error>
     </mat-form-field>
     <mat-form-field
-      fxFlex="45" appearance="outline">
+      fxFlex="48" appearance="outline">
       <mat-label>{{'labels.registry'|translate}}</mat-label>
       <input
+        data-cy-input="registry"
         matInput
         type="text"
         formControlName="registry"
         placeholder="{{'placeholder.studentRegistry'|translate}}"
         pattern="[A-Za-z0-9]+"
+        readonly="{{isFromLms}}"
         required>
       <mat-error *ngIf="studentForm.get('registry')?.errors?.required">{{'fieldErrors.registryIsRequired'|translate}}</mat-error>
       <mat-error *ngIf="studentForm.get('registry')?.errors?.pattern">{{'fieldErrors.registryPattern'|translate}}</mat-error>
     </mat-form-field>
     <mat-form-field
-      fxFlex="45" appearance="outline">
+      fxFlex="49" appearance="outline">
       <mat-label>{{'labels.name'|translate}}</mat-label>
       <input
+        data-cy-input="name"
         matInput
         type="text"
         formControlName="name"
         placeholder="{{'placeholder.studentName'| translate}}"
         minlength="5"
         pattern="^([a-zA-Zà-úÀ-Ú]|\s+)+$"
+        readonly="{{isFromLms}}"
         required>
       <mat-error *ngIf="studentForm.get('name')?.errors?.required">{{'fieldErrors.nameIsRequired'|translate}}</mat-error>
       <mat-error *ngIf="studentForm.get('name')?.errors?.minlength">{{'fieldErrors.minLengthStudent'|translate}}</mat-error>
       <mat-error *ngIf="studentForm.get('name')?.errors?.pattern">{{'fieldErrors.namePattern'|translate}}</mat-error>
     </mat-form-field>
-    <mat-slide-toggle formControlName="isActive">{{'labels.active'|translate}}</mat-slide-toggle>
+    <mat-slide-toggle 
+    formControlName="isActive"
+    [attr.data-cy-input]="'isActive:' + studentForm.get('isActive')?.value">{{'labels.active'|translate}}</mat-slide-toggle>
     <div *ngIf="isLoading;then showLoader;else showButton"></div>
     <ng-template #showLoader>
       <mat-spinner diameter="50"></mat-spinner>
     </ng-template>
     <ng-template #showButton>
-      <button mat-raised-button [disabled]="studentForm.invalid" type="submit">{{(isEdit ? 'labels.save':'labels.create')|translate}}</button>
+      <button *ngIf="!isFromLms"
+      mat-raised-button [disabled]="studentForm.invalid" 
+      data-cy-student-button="save" 
+      [attr.data-cy-is-disabled]="studentForm.invalid" 
+      type="submit">{{(isEdit ? 'labels.save':'labels.create')|translate}}</button>
     </ng-template>
   </form>
+  <button class="full-width" fxShow fxHide.gt-xs mat-raised-button color="primary"
+    (click)="closeForm()">{{('labels.close')|translate}}
+  </button>
 </div>

@@ -7,6 +7,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
 import { Observable } from 'rxjs';
 import Teacher from 'src/app/shared/model/teacher';
+import activityByTeacher from 'src/app/shared/model/activityByTeacher';
 
 @Injectable({
   providedIn: 'root'
@@ -36,12 +37,15 @@ export class TeacherService {
     return this.http.get<any>(`${environment.apiUrl}/api/teachers/${managerId}`).pipe(take(1));
   }
 
+  getTeacherByExternalId(teacherExternalId: number) {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/teachers/${teacherExternalId}`).pipe(take(1));
+  }
+
   updateTeacher(managerId: number | null, value: any) {
     this.isLoading = true;
     const {school,...rest} = value;
     const language = this.translateService.currentLang;
     return this.http.put<any>(`${environment.apiUrl}/api/teachers/${managerId}`, {language,...rest});
-    this.isLoading = false;
   }
 
   findTeacherByNameSimilarity(value: string): Observable<Teacher[]> {
@@ -54,5 +58,17 @@ export class TeacherService {
 
   findByEmailSimilarity(email: string) {
     return this.http.get<any[]>(`${environment.apiUrl}/api/teachers/email/${email}`).pipe(take(1));
+  }
+
+  getExternalTeachers(){
+    return this.http.get<any>(`${environment.apiUrl}/api/external/teachers`).pipe(take(1));
+  }
+
+  getPaginatedTeachers(pageSize:any, pageNumber:any){
+    return this.http.get<any>(`${environment.apiUrl}/api/teachers?size=${pageSize}&pageNumber=${pageNumber}`).pipe(take(1));
+  }
+
+  getActivitiesByTeacher(): Observable<activityByTeacher[]> {
+    return this.http.get<activityByTeacher[]>(`${environment.apiUrl}/api/teachers/activities-by-teacher`);
   }
 }

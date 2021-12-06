@@ -3,7 +3,6 @@ import {FormBuilder, Validators} from "@angular/forms";
 import {of} from "rxjs";
 import School from "../../../../shared/model/school";
 import {ActivatedRoute, Router} from "@angular/router";
-import {TeacherService} from "../../../teacher/services/teacher.service";
 import {SchoolService} from "../../../../admin/schools/services/school.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
@@ -21,8 +20,10 @@ export class StudentsFormComponent implements OnInit {
 
   @Input() teacherId:number | null = null;
   @Input() createMode = true;
+  @Input() isFromLms: boolean = false;
 
   @Output() save = new EventEmitter();
+  @Output() cancel = new EventEmitter();
 
   alreadyRegisteredEmail = false;
 
@@ -41,10 +42,8 @@ export class StudentsFormComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private studentsService: StudentsService,
-    private schoolService: SchoolService,
     private snackbar: MatSnackBar,
     private translateService: TranslateService,
-    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -54,6 +53,8 @@ export class StudentsFormComponent implements OnInit {
         this.teacherId = value['id'];
         this.studentsService.getStudentById(this.teacherId as number).subscribe(({email,name,isActive,registry})=>{
           this.studentForm.setValue({email,name,isActive,registry});
+        }, error => {
+
         });
       }
     })
@@ -65,9 +66,17 @@ export class StudentsFormComponent implements OnInit {
       this.studentForm.reset();
     }
     else{
-      this.studentsService.getStudentById(this.teacherId as number).subscribe( ({name,email,isActive,registry}) => {
-        this.studentForm.setValue({name,email,isActive,registry})
-      })
+      if (this.isFromLms === true){
+        this.studentsService.getExternalStudentById(this.teacherId as number).subscribe( ({name,email,isActive,registry}) => {
+          this.studentForm.setValue({name,email,isActive,registry});
+        })
+      }
+      else if (this.isFromLms === false || this.isFromLms === null) {
+          this.studentsService.getStudentById(this.teacherId as number).subscribe( ({name,email,isActive,registry}) => {
+          console.log("oi")
+          this.studentForm.setValue({name,email,isActive,registry});
+        })
+      }
     }
   }
 
@@ -108,6 +117,10 @@ export class StudentsFormComponent implements OnInit {
 
   showSnackbar(message: string){
     this.snackbar.open(message,'Fechar');
+  }
+  
+  closeForm(){
+    this.cancel.emit();
   }
 
 }

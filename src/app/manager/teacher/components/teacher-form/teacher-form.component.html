@@ -4,12 +4,13 @@
     {{(isEdit?'titles.updateTeacher' : 'titles.registerTeacher') |translate}}
   </h1>
 
-  <form fxLayout="row wrap" fxLayoutAlign="space-between" class="full-width" fxFlex="100" [formGroup]="teacherForm" (ngSubmit)="isEdit ? updateTeacher() : registerTeacher()">
+  <form fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="space-between" class="full-width" fxFlex="100" [formGroup]="teacherForm" (ngSubmit)="isEdit ? updateTeacher() : registerTeacher()">
     <mat-form-field
-      fxFlex="45" appearance="outline">
+      fxFlex="48" appearance="outline">
       <mat-label>E-mail</mat-label>
       <input
-        data-cy="email"
+      [readonly]="isFromLms"
+       data-cy-input="email"
         matInput
         type="text"
         formControlName="email"
@@ -21,28 +22,36 @@
       <mat-error *ngIf="teacherForm.get('email')?.errors?.pattern">{{'fieldErrors.emailPattern'|translate}}</mat-error>
     </mat-form-field>
     <mat-form-field
-      fxFlex="45" appearance="outline">
+      fxFlex="48" appearance="outline">
       <mat-label>{{'labels.name'|translate}}</mat-label>
       <input
-       data-cy="name"
+      [readonly]="isFromLms"
+        data-cy-input="name"
         matInput
         type="text"
         formControlName="name"
         placeholder="{{'placeholder.teacherName'| translate}}"
-        minlength="5"
         pattern="^([a-zA-Zà-úÀ-Ú]|\s+)+$"
         required>
       <mat-error *ngIf="teacherForm.get('name')?.errors?.required">{{'fieldErrors.nameIsRequired'|translate}}</mat-error>
-      <mat-error *ngIf="teacherForm.get('name')?.errors?.minlength">{{'fieldErrors.minLengthTeacher'|translate}}</mat-error>
       <mat-error *ngIf="teacherForm.get('name')?.errors?.pattern">{{'fieldErrors.namePattern'|translate}}</mat-error>
     </mat-form-field>
-    <mat-slide-toggle data-cy="isActive" formControlName="isActive">{{'labels.active'|translate}}</mat-slide-toggle>
+    <mat-slide-toggle 
+    formControlName="isActive"
+    [attr.data-cy-input]="'isActive:' + teacherForm.get('isActive')?.value">{{'labels.active'|translate}}</mat-slide-toggle>
     <div *ngIf="isLoading;then showLoader;else showButton"></div>
     <ng-template #showLoader>
       <mat-spinner diameter="50"></mat-spinner>
     </ng-template>
     <ng-template #showButton>
-      <button data-cy="save" mat-raised-button [disabled]="teacherForm.invalid" type="submit">{{(isEdit ? 'labels.save':'labels.create')|translate}}</button>
+      <button *ngIf="!isFromLms"  
+      mat-raised-button [disabled]="teacherForm.invalid" 
+      data-cy-teacher-button="save" 
+      [attr.data-cy-is-disabled]="teacherForm.invalid" 
+      type="submit">{{(isEdit ? 'labels.save':'labels.create')|translate}}</button>
     </ng-template>
   </form>
+  <button class="full-width" fxShow fxHide.gt-xs mat-raised-button color="primary"
+  (click)="closeForm()">{{('labels.close')|translate}}
+</button>
 </div>

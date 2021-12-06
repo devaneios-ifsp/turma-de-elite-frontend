@@ -7,11 +7,27 @@ import {take} from "rxjs/operators";
   providedIn: 'root'
 })
 export class ClassService {
-
+  
   constructor(private http: HttpClient) { }
-
+  
   createClass(classValue:any) {
     return this.http.post(`${environment.apiUrl}/api/class`,classValue).pipe(take(1));
+  }
+
+  closeClassroomClass(externalId: string | null) {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/courses/${externalId}/close-class`,{});
+  }
+
+  getExternalClasses(){
+    return this.http.get<any>(`${environment.apiUrl}/api/external/courses`).pipe(take(1));
+  }
+
+  getExternalClassesFromAuthenticatedTeacher(){
+    return this.http.get<any>(`${environment.apiUrl}/api/external/courses/authenticated-teacher`).pipe(take(1));
+  }
+
+  getExternalClassById(externalClassId: any) {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/courses/${externalClassId}`).pipe(take(1));
   }
 
   getPaginatedClasses(pageSize:any, pageNumber:any){

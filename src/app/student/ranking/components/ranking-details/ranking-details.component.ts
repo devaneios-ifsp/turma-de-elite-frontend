@@ -16,9 +16,12 @@ export class RankingDetailsComponent implements OnInit {
   isEdit = false;
 
   @Input() classId:number | null = null;
+  @Input() externalId: string | null = null;
+
   @Input() createMode = true;
 
   @Output() save = new EventEmitter();
+  @Output() cancel = new EventEmitter();
 
   students: any[] = [];
 
@@ -42,13 +45,32 @@ export class RankingDetailsComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges){
     this.isEdit = !this.createMode;
+    if(this.classId){
       this.rankingService.getClassRanking(this.classId).subscribe(response => {
         this.students = response;
       })
+    }
+    if(this.externalId){
+      this.rankingService.getExternalClassRanking(this.externalId).subscribe(response => {
+        this.students = response;
+      })
+    }
   }
 
   displayName(teacher: any){
     return teacher && teacher.name ? teacher.name: '';
   }
 
+  getTier(tier: any) {
+    if(tier=== 'BRONZE'){
+      return 'bronze';
+    } else if(tier==='SILVER'){
+      return 'silver';
+    } else {
+      return 'gold';
+    }
+  }
+  closeForm(){
+    this.cancel.emit();
+  }
 }

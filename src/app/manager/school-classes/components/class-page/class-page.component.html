@@ -81,7 +81,7 @@
         fxLayout="row"
         fxFlexAlign="center center"
         fxLayoutAlign="start center"
-        (click)="classToggleId=classroom.id;createMode=false; isFromLms=true">
+        (click)="classToggleId=classroom.externalId;createMode=false; isFromLms=true">
         <mat-icon [ngClass]="classroom.isActive?'primary':'disabled'">person</mat-icon>
         <p color="primary">{{classroom.name}}</p>
       </a>
@@ -93,7 +93,7 @@
           fxLayout="row"
           fxFlexAlign="center center"
           fxLayoutAlign="start center"
-          (click)="classToggleId=classroom.id;createMode=false; isFromLms=true; drawer.toggle()">
+          (click)="classToggleId=classroom.externalId;createMode=false; isFromLms=true; drawer.toggle()">
           <mat-icon [ngClass]="classroom.isActive?'primary':'disabled'">person</mat-icon>
           <p color="primary">{{classroom.name}}</p>
         </a>

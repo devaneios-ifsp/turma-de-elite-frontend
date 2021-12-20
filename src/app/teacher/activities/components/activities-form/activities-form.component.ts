@@ -79,6 +79,7 @@ export class ActivitiesFormComponent implements OnInit {
             schoolClasses: [],
             punctuation: response.punctuation,
             description: response.description,
+            isDeliverable: response.isDeliverable,
             isVisible: response.isVisible,
             isActive: response.isActive, 
             maxDeliveryDate: [],

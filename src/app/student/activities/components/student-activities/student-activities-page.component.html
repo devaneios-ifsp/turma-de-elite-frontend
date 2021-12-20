@@ -94,9 +94,9 @@
               <mat-tab label="Google Classroom">
                 <div *ngFor="let activity of studentLmsActivities">
                   <div *ngIf="(isHandset$ | async)"
-                    [ngClass]="'mat-elevation-z1 ' + (activityToggleId===activity.id?'toggled-tile':'tile')"
+                    [ngClass]="'mat-elevation-z1 ' + (activityToggleId===activity.externalId?'toggled-tile':'tile')"
                     fxLayout="column" fxLayoutAlign="start center"
-                    (click)="activityToggleId=[activity.id,activity.classId];createMode=false;drawer.toggle(); isFromLms=true;">
+                    (click)="activityToggleId=[activity.externalId,activity.classId];createMode=false;drawer.toggle(); isFromLms=true;">
                     <div fxLayout="row" class="full-width full-height" fxLayoutAlign="start start" fxLayoutGap="15px">
                       <div [ngClass]="'status ' + activityStatus(activity)"> </div>
                       <div fxLayout="column" fxLayoutAlign="space-between" fxFlexAlign="start" class="activity-info"
@@ -126,9 +126,9 @@
 
                 <div *ngFor="let activity of studentLmsActivities">
                   <div *ngIf="!(isHandset$ | async)"
-                    [ngClass]="'mat-elevation-z1 ' + (activityToggleId===activity.id?'toggled-tile':'tile')"
+                    [ngClass]="'mat-elevation-z1 ' + (activityToggleId===activity.externalId?'toggled-tile':'tile')"
                     fxLayout="column" fxLayoutAlign="start center"
-                    (click)="activityToggleId=[activity.id,activity.classId];createMode=false; isFromLms=true;">
+                    (click)="activityToggleId=[activity.externalId,activity.classId];createMode=false; isFromLms=true;">
                     <div fxLayout="row" class="full-width full-height" fxLayoutAlign="start start" fxLayoutGap="15px">
                       <div [ngClass]="'status ' + activityStatus(activity)"> </div>
                       <div fxLayout="column" fxLayoutAlign="space-between" fxFlexAlign="start" class="activity-info"

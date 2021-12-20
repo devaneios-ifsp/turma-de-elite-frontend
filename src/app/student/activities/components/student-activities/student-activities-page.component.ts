@@ -65,7 +65,6 @@ export class StudentActivitiesPageComponent implements OnInit {
       })
     } else if (index === 1){
       this.activityService.getExternalStudentActivities().subscribe(response => {
-        console.log("Entrou aqui");
         this.studentLmsActivities = response;
         this.totalLength = response.totalElements;
         this.isLoading = false;

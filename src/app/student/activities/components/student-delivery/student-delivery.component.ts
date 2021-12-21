@@ -64,6 +64,12 @@ export class StudentDeliveryComponent implements OnInit {
           this.filenameControl.setValue(deliveryFilename);
           this.isDelivered = !!deliveryFilename;
         });
+      } else {
+        this.activityService.getStudentExternalActivityById(this.activityId[0]).subscribe(({filename,deliveryFilename,...rest}) =>{
+          this.activity = {filename,deliveryFilename,...rest};
+          this.filenameControl.setValue(deliveryFilename);
+          this.isDelivered = !!deliveryFilename;
+        });
       }
     }
   }

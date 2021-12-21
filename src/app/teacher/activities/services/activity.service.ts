@@ -31,7 +31,11 @@ export class ActivityService {
   }
 
   getTeacherExternalActivityById(externalActivityId: number) {
-    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/${externalActivityId}`).pipe(take(1));
+    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/teacher/${externalActivityId}`).pipe(take(1));
+  }
+
+  getStudentExternalActivityById(externalActivityId: number) {
+    return this.http.get<any>(`${environment.apiUrl}/api/external/activities/student/${externalActivityId}`).pipe(take(1));
   }
 
   getStudentActivityById(activityId: number,classId: number) {
